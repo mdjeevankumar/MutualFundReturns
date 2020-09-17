@@ -1,0 +1,106 @@
+<div class="row header-card">
+ <div class="offset-sm-5 mrgtop10"><h2>Mutual Fund Calculations</h2></div>
+</div>
+
+<div class="card mrgtop1">
+<section fxLayout="row wrap" fxLayoutAlign="center center">    
+    <mat-card fxFlex="500px" fxFlex.xs="100%" class="layout card-body card-container">
+        <mat-card-title></mat-card-title>
+        <form [formGroup]="fundReturnsForm" autocomplete="off" novalidate (ngSubmit)="generateData(fundReturnsForm.value)" fxLayout="column wrap"
+         fxLayoutGap="10px">
+        <mat-card-content>   
+          <ngb-alert *ngIf="alertMessage && isSuccess"  type="success" (close)="alertMessage = null">
+            {{ alertMessage }}</ngb-alert>     
+            <ngb-alert *ngIf="alertMessage && !isSuccess"  type="danger" (close)="alertMessage = null">
+              {{ alertMessage }}</ngb-alert>        
+            <div class="form-group row">
+            <div class="col-sm-6">
+            <mat-form-field>
+                <input matInput type="text"  placeholder="Scheme Number" formControlName="schemeNumber" id="schemeNumber">
+                <mat-hint align="end">Provide scheme number details</mat-hint>
+                <mat-error *ngIf="hasError('schemeNumber', 'required')">Scheme Number is required</mat-error>
+                <mat-error *ngIf="hasError('schemeNumber', 'maxlength')">You have more than 15 characters</mat-error>
+                <mat-error *ngIf="hasError('schemeNumber', 'pattern')"> Please Provide a valid Number format.</mat-error>
+              </mat-form-field>
+             </div>
+             <div class="col-sm-3 paddtop1">
+                <button class="btn btn-success" type="button" (click)="downloadData(fundReturnsForm.value)" [disabled]="!fundReturnsForm.controls.schemeNumber.valid">Download</button>
+                 </div>
+            </div>
+            <div class="form-group row">
+             <div class="col-sm-6">
+              <mat-form-field>
+                <input matInput type="text"  placeholder="Period Of Investment" formControlName="periodOfInvest">
+                <mat-hint align="end">Provide time period of investment</mat-hint>
+                <mat-error *ngIf="hasError('periodOfInvest', 'required')">Period Of Investment is required</mat-error>
+                <mat-error *ngIf="hasError('periodOfInvest', 'maxlength')">You have more than 3 characters</mat-error>
+                <mat-error *ngIf="hasError('periodOfInvest', 'pattern')"> Please Provide a valid Number format.</mat-error>          
+              </mat-form-field>
+              </div>           
+            
+              <div class="col-sm-6">
+              <mat-form-field>
+                <input matInput type="text"  placeholder="Horizon" formControlName="horizon">
+                <mat-hint align="end">Provide how many months you need to find the returns</mat-hint>
+                <mat-error *ngIf="hasError('horizon', 'required')">Horizon is required</mat-error>
+                <mat-error *ngIf="hasError('horizon', 'maxlength')">You have more than 3 characters</mat-error>
+                <mat-error *ngIf="hasError('horizon', 'pattern')"> Please Provide a valid Number format.</mat-error>
+              </mat-form-field>
+              </div>
+              </div>
+        </mat-card-content>
+        <mat-card-actions class="mrgnbtm10">
+            <mat-card-actions align="center">
+               <div class="form-group row">
+                <div class="col-sm-3 offset-sm-3">
+                <button type="submit" class="btn btn-primary wid100" [disabled]="!fundReturnsForm.valid">Generate</button>
+                </div>
+                <div class="col-sm-3">
+                <button class="btn btn-warning wid100 highlight" (click)="resetData()">Reset</button>
+                </div>
+                </div>
+              </mat-card-actions>
+        </mat-card-actions>
+        </form>            
+              </mat-card>              
+          </section>
+          <div class="content mt-3" *ngIf="isDataAvailable">
+            <div class="card">
+              <div class="card-body cardcontainer offset-sm-2">
+                  <h2>Month Wise Results</h2>                  
+                 <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 wid85">                      
+                   <ng-container matColumnDef="month">
+                      <th class="paddlft3" mat-header-cell *matHeaderCellDef mat-sort-header> Month </th>
+                      <td mat-cell *matCellDef="let element"> {{element.month}} </td>
+                    </ng-container>
+                  
+                    <ng-container matColumnDef="returns">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header class="paddlft2 wid15"> Returns </th>
+                      <td class="paddlft2" mat-cell *matCellDef="let element"> {{element.nav}} </td>
+                    </ng-container>
+                  
+                    <ng-container matColumnDef="calculations">
+                      <th class="paddlft3" mat-header-cell *matHeaderCellDef mat-sort-header> Calculations </th>
+                      <td mat-cell *matCellDef="let element"> Start nav - {{element.startDate}} <br/>
+                        End  &nbsp;&nbsp;nav - {{element.endDate}}  </td>                          
+                    </ng-container>      
+                    <ng-container matColumnDef="nav">
+                      <th class="paddlft3" mat-header-cell *matHeaderCellDef mat-sort-header> Nav Value </th>
+                      <td mat-cell *matCellDef="let element">  Start nav - {{element.start}}  <br/>
+                        End  &nbsp;&nbsp;nav -  {{element.end}} </td>                          
+                    </ng-container>     
+                    <ng-container matColumnDef="nearestAvailableDate">
+                      <th class="paddlft1" mat-header-cell *matHeaderCellDef mat-sort-header> Nearest Available Date </th>
+                      <td mat-cell *matCellDef="let element">Start Date -  {{element.navAvailableStart}}  <br/>
+                        End &nbsp;&nbsp;Date - {{element.navAvailableEnd}} </td>                          
+                    </ng-container>                    
+                                
+                      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                      <tr class="paddtop2" mat-row *matRowDef="let row; columns:displayedColumns;"></tr>
+                       </table>                        
+                        <div *ngIf="dataSource?.length === 0" class="row col-sm-12 no-records"><h3>No records found</h3> </div>
+                         <mat-paginator  class="offset-sm-2 col-sm-6 mrgtop0" [pageSizeOptions]="[5,10]" showFirstLastButtons></mat-paginator>
+                     </div>
+                    </div>
+                    </div> 
+        </div>

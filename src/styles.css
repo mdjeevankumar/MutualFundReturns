@@ -1,1 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
+/* @import "~bootstrap/dist/css/bootstrap.css";  */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import "~bootstrap/dist/css/bootstrap.css";
+/* @import "~font-awesome/css/font-awesome.css";
+@import url("../node_modules/normalize.css/normalize.css"); */
+
+
+html, body { height: 100%; background: whitesmoke; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.btn-success:disabled:hover {
+    cursor:not-allowed
+ }     
+ .btn-primary:disabled:hover {
+    cursor:not-allowed
+ }
+
+ .mat-form-field-appearance-legacy .mat-form-field-infix{
+     font-size:initial;
+ }
