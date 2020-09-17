@@ -117,10 +117,7 @@ export class FundsComponent implements OnInit {
     const periodOfInvest = parseInt(this.returns.periodOfInvest);  
     let j = 0;  
     let monthEvaluate;  
-    let length; 
-    console.log(currentYear);
-    console.log(horizon);
-    console.log(horizonStart);
+    let length;   
     // to start from current month for the first year in period of invest
     for(let i=horizonStart; i<=currentYear;i++){  
       if(j === 0) {  
