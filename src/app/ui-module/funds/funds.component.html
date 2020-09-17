@@ -31,7 +31,7 @@
              <div class="col-sm-6">
               <mat-form-field>
                 <input matInput type="text"  placeholder="Period Of Investment" formControlName="periodOfInvest">
-                <mat-hint align="end">Provide time period of investment</mat-hint>
+                <mat-hint align="end">Provide time period of investment in years</mat-hint>
                 <mat-error *ngIf="hasError('periodOfInvest', 'required')">Period Of Investment is required</mat-error>
                 <mat-error *ngIf="hasError('periodOfInvest', 'maxlength')">You have more than 3 characters</mat-error>
                 <mat-error *ngIf="hasError('periodOfInvest', 'pattern')"> Please Provide a valid Number format.</mat-error>          
@@ -41,10 +41,10 @@
               <div class="col-sm-6">
               <mat-form-field>
                 <input matInput type="text"  placeholder="Horizon" formControlName="horizon">
-                <mat-hint align="end">Provide how many months you need to find the returns</mat-hint>
+                <mat-hint align="end">Provide time period in months to find returns</mat-hint>
                 <mat-error *ngIf="hasError('horizon', 'required')">Horizon is required</mat-error>
                 <mat-error *ngIf="hasError('horizon', 'maxlength')">You have more than 3 characters</mat-error>
-                <mat-error *ngIf="hasError('horizon', 'pattern')"> Please Provide a valid Number format.</mat-error>
+                <mat-error *ngIf="hasError('horizon', 'pattern')"> Please provide a valid Number format.</mat-error>
               </mat-form-field>
               </div>
               </div>
@@ -56,7 +56,7 @@
                 <button type="submit" class="btn btn-primary wid100" [disabled]="!fundReturnsForm.valid">Generate</button>
                 </div>
                 <div class="col-sm-3">
-                <button class="btn btn-warning wid100 highlight" (click)="resetData()">Reset</button>
+                <button class="btn btn-warning wid100 highlight" type="reset" (click)="resetData()">Reset</button>
                 </div>
                 </div>
               </mat-card-actions>

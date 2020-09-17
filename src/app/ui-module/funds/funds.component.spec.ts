@@ -61,21 +61,42 @@ describe('FundsComponent', () => {
     var fundReturnsFormValue:any = {};    
     var isdownload = false;
     fundReturnsFormValue.schemeNumber = 102885;
-    fundReturnsFormValue.periodOfInvest = 5;
-    fundReturnsFormValue.horizon = 5;
+    fundReturnsFormValue.periodOfInvest = 1;
+    fundReturnsFormValue.horizon = 1;
     var res:any = {};
     res.data = {};
     res.meta = {};
     res.meta.scheme_name = 'sbi';
     res.meta.scheme_code =' 010';
     spyOn(service, 'getFundSchemeDetails').withArgs(102885). and.returnValue(of(res));
-    // spyOn(excelService, 'exportJsonAsExcelFile').withArgs(res.data, res.meta.scheme_name+ '-' + res.meta.scheme_code). and.returnValue();
-    // component.getCalculatedFund(false);
-    component.fundCalculation();
-    component.calculateNav("29-02-2012",true);
-    // component.calculateNav("25-02-2020",true);
-    // component.loadData();
+    component.generateData(fundReturnsFormValue,isdownload);
     expect(component.isDataAvailable).toBe(false);
+  });
+  it('test fund data', function() {
+    var download = false;
+    var res:any = {};
+    res.data = [{ "date": "16-09-2020", "nav": "142.44650" },
+    { "date": "15-09-2020", "nav": "141.71140" },
+    { "date": "14-09-2020", "nav": "141.07170" },
+    { "date": "11-09-2020", "nav": "140.96200" }, 
+    { "date": "10-09-2020", "nav": "140.82000" },
+     { "date": "09-09-2020", "nav": "139.54780" }, 
+     { "date": "08-09-2020", "nav": "140.34460" }, 
+     { "date": "07-09-2020", "nav": "141.33770" }, 
+     { "date": "04-09-2020", "nav": "141.82750" }, 
+     { "date": "03-09-2020", "nav": "143.66520" }, 
+     { "date": "02-09-2020", "nav": "143.83990" }, 
+     { "date": "01-09-2020", "nav": "142.92040" }, 
+     { "date": "31-08-2020", "nav": "141.56170" }, 
+     { "date": "28-08-2020", "nav": "144.80530" }, 
+     { "date": "20-10-2019", "nav": "143.60270" }, 
+     { "date": "26-08-2020", "nav": "143.41250" }, 
+     { "date": "25-08-2020", "nav": "143.22440" }];
+     component.returns.schemeNumber = 102885;
+     component.returns.horizon = 1;
+     component.returns.periodOfInvest = 1;
+    spyOn(service, 'getFundSchemeDetails').withArgs(component.returns.schemeNumber). and.returnValue(of(res));
+    component.getCalculatedFund(download);
   });
 });
 

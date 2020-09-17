@@ -29,6 +29,7 @@
     "file-saver": "^2.0.2",
     "materialize-css": "^1.0.0",
     "ng-bootstrap-alert": "^2.0.0",
+    "ngx-spinner": "^10.0.1",
     "normalize.css": "^8.0.1",
     "rxjs": "^6.5.5",
     "rxjs-compat": "^6.6.3",

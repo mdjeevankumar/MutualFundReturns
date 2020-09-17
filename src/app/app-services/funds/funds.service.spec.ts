@@ -16,4 +16,8 @@ describe('FundsService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+  it('test service', () => {
+    var id = 102885;
+    service.getFundSchemeDetails(id);    
+  });
 });

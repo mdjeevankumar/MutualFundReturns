@@ -7,7 +7,7 @@ import {FundsService} from '../../app-services/funds/funds.service';
 import {ExcelService} from '../../app-services/excel/excel.service';
 import { debounceTime, first } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-
+import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-funds',
   templateUrl: './funds.component.html',
@@ -24,13 +24,14 @@ export class FundsComponent implements OnInit {
   isDataAvailable = false;  
   mutualFundDetails:any ={};
   isSuccess = false;
-  constructor(private fundsService: FundsService , private excelService : ExcelService) { }
+  constructor(private fundsService: FundsService , private excelService : ExcelService,private spinner: NgxSpinnerService) { }
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   displayedColumns: string[] = ['month', 'returns', 'calculations','nav','nearestAvailableDate'];
   dataSource: any = [];
   fundDetails: any =[];
   returns: any = {};
+  isBreak = false;
   
   ngOnInit() {
       this.fundReturnsForm = new FormGroup({
@@ -54,13 +55,15 @@ export class FundsComponent implements OnInit {
   }
 
   resetData() {
+    this.spinner.hide();  
     this.fundReturnsForm.reset();
     this.fundReturnsForm.markAsPristine();
     this.fundReturnsForm.markAsUntouched();
-    this.isDataAvailable = false;
+    this.isDataAvailable = false;    
   }
 
   generateData(fundReturnsFormValue,isdownload = false) {    
+    this.spinner.show();
     if (this.fundReturnsForm.valid || isdownload) {
       this.returns = {
         schemeNumber: fundReturnsFormValue.schemeNumber,
@@ -86,15 +89,18 @@ export class FundsComponent implements OnInit {
           this.alert.next('Details not available for the scheme No ' + '-' + this.returns.schemeNumber);
           this.isSuccess = false;
           this.dataSource = [];
+          this.spinner.hide();
         }
         } else {
           if(this.fundDetails.data.length > 0 ){
           this.excelService.exportJsonAsExcelFile(this.fundDetails.data,this.fundDetails.meta.scheme_name + '-' + this.fundDetails.meta.scheme_code);     
           this.alert.next('Exported Successfully');
           this.isSuccess = true;
+          this.spinner.hide(); 
            } else {
            this.alert.next('Data not available to export for this scheme Number');
             this.isSuccess = false;
+            this.spinner.hide(); 
           }
         }
         });    
@@ -112,6 +118,9 @@ export class FundsComponent implements OnInit {
     let j = 0;  
     let monthEvaluate;  
     let length; 
+    console.log(currentYear);
+    console.log(horizon);
+    console.log(horizonStart);
     // to start from current month for the first year in period of invest
     for(let i=horizonStart; i<=currentYear;i++){  
       if(j === 0) {  
@@ -133,10 +142,14 @@ export class FundsComponent implements OnInit {
         this.details.endDate = date + '-' + this.months[k] + '-' + i;  
         this.details.filteredStartDate = date + '-' + ((k.toString().length === 1 && k !== 9)? ('0'+ (k+1)): (k+1)) + '-' + (i - periodOfInvest);  
         this.details.filteredEndDate = date + '-' + ((k.toString().length === 1 && k !== 9)? ('0'+(k+1)): (k+1)) +  '-' + i;  
+        this.details.limitStartDate = new Date(this.details.filteredStartDate.split('-')[1] + '-' + this.details.filteredStartDate.split('-')[0]
+        + '-' + this.details.filteredStartDate.split('-')[2]);  
+        this.details.limitEndDate =  new Date(this.details.filteredEndDate.split('-')[1] + '-' + this.details.filteredEndDate.split('-')[0]
+        + '-' + this.details.filteredEndDate.split('-')[2]);  
         this.calculateNav(this.details.filteredStartDate,true);
         this.calculateNav(this.details.filteredEndDate,false);
-        this.details.nav = ((Math.pow(this.details.end/this.details.start,(1/periodOfInvest))-1) * 100).toFixed(2);
-        this.details.nav = (this.details.nav === 0) ? 0 : (this.details.nav + '%');
+        this.details.nav = (this.details.nav !== 0) ? ((((Math.pow(this.details.end/this.details.start,(1/periodOfInvest))-1) * 100).toFixed(2)) +'%') : 0;
+        // this.details.nav = (this.details.nav === 0) ? 0 : (this.details.nav + '%'); 
         this.fundDetailedInfo.push(this.details);
       }  
       j++;
@@ -147,6 +160,7 @@ export class FundsComponent implements OnInit {
 
   //calculate Nav data for specific start and end date checking next and previous date for nav data if not available
   calculateNav(date,isStart){
+    this.isBreak = false;
     const i = 0;
     let existingData =this.fundDetails.data.filter(x =>x.date === date);
     let navData;
@@ -171,9 +185,38 @@ export class FundsComponent implements OnInit {
        if(newFilteredData.length > 0) {
          navData = newFilteredData[i].nav;         
         } else {
-        // navData = 0;
-        if(this.details.filteredEndDate!==date){
-        this.calculateNav(date,isStart);
+        // check the first available date start date from excel and validate accordingly if nav is start nav directly assign the first value in excel
+        //if date lies in range and less than start date in excel eg - 2000 - 2010 -> excel start date is 2008 donot loop it from 2000 to 2008 for available
+        //nav just set the first start date as date and validating in the scenerio
+          let limitDate = new Date(date.split('-')[1] + '-' +date.split('-')[0] + '-' + date.split('-')[2]);
+          if(limitDate >= this.details.limitStartDate && limitDate <=this.details.limitEndDate){
+          let availableStart = this.fundDetails.data[0].date//data be available as method is triggerred if dat is available
+          let availableEnd = this.fundDetails.data[this.fundDetails.data.length - 1].date;
+          let dateFormatStart = new Date(availableStart.split('-')[1] + '-' + availableStart.split('-')[0] + '-' + availableStart.split('-')[2]);
+          let dateFormatEnd= new Date(availableEnd.split('-')[1] + '-' + availableEnd.split('-')[0] + '-' + availableEnd.split('-')[2]);
+          let fixedStartDate = dateFormatEnd < dateFormatStart ? dateFormatEnd : dateFormatStart;
+          if((fixedStartDate > limitDate)) {
+            if(isStart){
+            limitDate = fixedStartDate;
+            date = ((fixedStartDate.getDate().toString().length ===1) ? ('0'+ fixedStartDate.getDate()) : (fixedStartDate.getDate())) 
+            + '-' + ((fixedStartDate.getMonth().toString().length === 1 && fixedStartDate.getMonth() !==9)? ('0'+(fixedStartDate.getMonth() +1)): (fixedStartDate.getMonth() +1))+ '-' + fixedStartDate.getFullYear();
+            console.log(date);            
+          } else {
+            this.alert.next('Data not available for given horizon and the data is only available from ' + fixedStartDate + ' ' + 'onwards.');
+            this.isSuccess = false;
+            this.isDataAvailable = false;
+            return;
+          } 
+        }
+          this.calculateNav(date,isStart);
+        } 
+        else{
+          this.details.nav = 0;
+          this.details.start = 0;
+          this.details.end = 0;
+          this.details.navAvailableStart = 'NA';          
+          this.details.navAvailableEnd = 'NA'; 
+          return;
         }
         }         
        }
@@ -187,13 +230,14 @@ export class FundsComponent implements OnInit {
     } else {
       if(navData!=undefined){
       this.details.end = (parseFloat(navData)).toFixed(2);
-      this.details.navAvailableEnd = date.split('-')[0] + '-' + this.months[(parseInt((date.split('-')[1])) - 1)]+ '-'+ date.split('-')[2] ;;  
+      this.details.navAvailableEnd = date.split('-')[0] + '-' + this.months[(parseInt((date.split('-')[1])) - 1)]+ '-'+ date.split('-')[2] ;  
       }
-    }
-  }
+    }  
+}
 
   loadData () {
-    this.dataSource = new MatTableDataSource(this.fundDetailedInfo);     
+    this.dataSource = new MatTableDataSource(this.fundDetailedInfo); 
+    this.spinner.hide();    
     setTimeout(() => {
     this.dataSource.sort = this.sort;  
     this.dataSource.paginator = this.paginator; 

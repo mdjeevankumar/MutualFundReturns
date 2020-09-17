@@ -18,7 +18,7 @@ import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule} from '@angular/common/http';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
   declarations: [
@@ -42,7 +42,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     MatSortModule,
     MatPaginatorModule,
     CdkTableModule,
-    NgbModule
+    NgbModule,
+    NgxSpinnerModule
   ],
   providers: [{provide: LocationStrategy, useClass: HashLocationStrategy}],  
   bootstrap: [AppComponent]
