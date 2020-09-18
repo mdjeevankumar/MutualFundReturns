@@ -8,7 +8,7 @@ Hello,
 
 Please open the link 
 
-https://mutualfund-returns-calc.netlify.app/#/funds-  in browser where the app is deployed
+https://mutualfund-returns-calc.netlify.app/#/funds-        in browser where the app is deployed
 
 Steps to test:
 
