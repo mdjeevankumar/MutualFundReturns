@@ -145,8 +145,8 @@ export class FundsComponent implements OnInit {
         + '-' + this.details.filteredEndDate.split('-')[2]);  
         this.calculateNav(this.details.filteredStartDate,true);
         this.calculateNav(this.details.filteredEndDate,false);
-        this.details.nav = (this.details.nav !== 0) ? ((((Math.pow(this.details.end/this.details.start,(1/periodOfInvest))-1) * 100).toFixed(2)) +'%') : 0;
-        // this.details.nav = (this.details.nav === 0) ? 0 : (this.details.nav + '%'); 
+        this.details.nav = (this.details.nav !== 0) ? ((((Math.pow(this.details.end/this.details.start,(1/periodOfInvest))-1) * 100).toFixed(2))) : 0;
+        this.details.nav = (this.details.nav === NaN || this.details.nav === 0) ? 0 : (this.details.nav + '%'); 
         this.fundDetailedInfo.push(this.details);
       }  
       j++;
