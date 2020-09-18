@@ -8,7 +8,7 @@ Hello,
 
 Please open the link 
 
-https://mutualfund-returns.netlify.app/#/funds -  in browser where the app is deployed
+https://mutualfund-returns-calc.netlify.app/#/funds-  in browser where the app is deployed
 
 Steps to test:
 
@@ -18,7 +18,8 @@ Steps to test:
 
 3.)Further click on Generate button to view the details in grid month wise for the given period of selection.
 
-4.)on Generate Table grid will be available which comprises of details of Month,nav,calculations,available nearest date comprises nav details
+4.)on Generate Table grid will be available which comprises of details of Month,nav,calculations,available nearest date comprises nav details.Default pagination is set to 5
+We can change to page size if required.
 
 5.)User will be able to generate data only after providing valid details in scheme,horizon and period of investment.
 validations has been included 
