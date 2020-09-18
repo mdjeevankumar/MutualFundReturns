@@ -16,7 +16,7 @@ Steps to test:
 
 1.)Please provide the valid scheme number and the user will be able to download data once provided
 
-2.)further provide the period of investment and horizon (in how many moth we need to find the returns).
+2.)further provide the period of investment and horizon (in how many moth we need to find the returns). Eg scheme Number  - 102885 , Period of Investment -5 ,Horizon -4
 
 3.)Further click on Generate button to view the details in grid month wise for the given period of selection.
 
